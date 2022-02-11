@@ -1,0 +1,14 @@
+body {
+  font-size: 62.5%;
+}
+
+.container {
+  margin: 0 auto;
+  padding: 20px;
+  max-width: 600px;
+}
+
+h1 {
+  font-size: 1.8rem;
+  font-weight: 400;
+}

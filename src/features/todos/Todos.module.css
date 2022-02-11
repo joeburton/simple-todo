@@ -1,0 +1,68 @@
+.todosList {
+  list-style: none;
+  padding: 0;
+}
+
+.todosList li {
+  display: flex;
+  font-size: 1rem;
+  margin: 4px 0 12px 0;
+  line-height: 20px;
+  font-weight: 200;
+}
+
+.todosList li .text {
+  display: flex;
+  cursor: pointer;
+  color: black;
+  width: 100%;
+}
+
+.todosList li .text svg {
+  margin: 0 4px 0 0;
+}
+
+h2 {
+  margin: 0 0 0 0;
+  font-size: 1.2rem;
+  font-weight: 300;
+}
+
+.add {
+  margin-left: 4px;
+  align-self: center;
+  padding: 6px;
+}
+
+.addTodo {
+  display: flex;
+  margin: 0 0 32px 0;
+}
+
+.todo {
+  font-size: 1.1rem;
+  font-weight: 200;
+  padding: 4px;
+}
+
+.strikethrough {
+  text-decoration: line-through;
+  color: grey;
+}
+
+.statusActive {
+  color: black;
+}
+
+.statusComplete {
+  color: grey;
+}
+
+.deleteIcon {
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.deleteIcon:hover {
+  color: red;
+}
