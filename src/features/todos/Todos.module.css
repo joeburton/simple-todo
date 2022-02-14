@@ -28,12 +28,6 @@ h2 {
   font-weight: 300;
 }
 
-.add {
-  margin-left: 4px;
-  align-self: center;
-  padding: 6px;
-}
-
 .addTodo {
   display: flex;
   margin: 0 0 32px 0;

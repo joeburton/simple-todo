@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import ModeStandbyIcon from '@mui/icons-material/ModeStandby';
+import Button from '@mui/material/Button';
 
 import { RootState } from '../../app/store';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
@@ -59,6 +60,7 @@ const TodoItem = ({ todo }: TodoItemProps) => {
 
 const Todos = () => {
   const dispatch = useAppDispatch();
+  const [details, setDetails] = useState();
 
   const [newTodo, setNewTodo] = useState<string>('');
 
@@ -72,17 +74,47 @@ const Todos = () => {
     dispatch(addTodo(newTodo));
   };
 
+  useEffect(() => {
+    fetch('data.json')
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  }, []);
+
+  useEffect(() => {
+    const getData = async () => {
+      const response = await fetch('data.json');
+      const data = await response.json();
+
+      setDetails(data);
+    };
+
+    getData().catch((e) => {
+      console.log(e);
+    });
+  }, []);
+
   return (
     <div className={styles.row}>
+      <>{JSON.stringify(details)}</>
       <div className={styles.addTodo}>
         <input
           value={newTodo}
           onChange={updateNewTodo}
           className={styles.todo}
         />
-        <button className={styles.add} onClick={addNewTodo}>
+        <Button
+          className={styles.add}
+          onClick={addNewTodo}
+          variant='outlined'
+          sx={{ marginLeft: '4px', padding: '6px', color: 'black' }}
+        >
           ADD
-        </button>
+        </Button>
       </div>
       <h2>Active</h2>
       <TodoList filterFn={(todo: Todo) => todo.complete === false} />
