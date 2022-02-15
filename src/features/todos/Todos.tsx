@@ -1,11 +1,19 @@
-import { useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import ModeStandbyIcon from '@mui/icons-material/ModeStandby';
 import Button from '@mui/material/Button';
 
 import { RootState } from '../../app/store';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
-import { addTodo, deleteTodo, selectStatus, Todo } from './todosSlice';
+import {
+  addTodo,
+  deleteTodo,
+  selectStatus,
+  changeList,
+  Todo,
+} from './todosSlice';
+
+import { SelectMenu } from '../../components';
 import styles from './Todos.module.css';
 
 interface TodoListProps {
@@ -13,13 +21,23 @@ interface TodoListProps {
 }
 
 const TodoList = ({ filterFn }: TodoListProps) => {
-  const todos = useAppSelector((state: RootState) => state.todos.todos);
+  const todos = useAppSelector((state: RootState) => state.todos.todosGroup);
 
-  const sortedTodos = filterFn ? todos.filter(filterFn) : todos;
+  const selectedListId = useAppSelector(
+    (state: RootState) => state.todos.selectedListId
+  );
+
+  // get selected list by list id
+  const selectedList = todos.find(
+    (list) => list.listid === selectedListId
+  )?.todos;
+
+  // sort complete and active list items
+  const sortedTodos = filterFn ? selectedList?.filter(filterFn) : selectedList;
 
   return (
     <ul className={styles.todosList}>
-      {sortedTodos.map((todo, i) => (
+      {sortedTodos?.map((todo, i) => (
         <TodoItem key={i} todo={todo} />
       ))}
     </ul>
@@ -32,7 +50,7 @@ interface TodoItemProps {
 
 const TodoItem = ({ todo }: TodoItemProps) => {
   const dispatch = useAppDispatch();
-
+  console.log(todo);
   const removeTodo = (e: React.MouseEvent<SVGElement>) => {
     dispatch(deleteTodo({ id: todo.id }));
   };
@@ -61,6 +79,7 @@ const TodoItem = ({ todo }: TodoItemProps) => {
 const Todos = () => {
   const dispatch = useAppDispatch();
   const newTodoRef = useRef<HTMLInputElement>(null);
+  const [selectedList, setSelectedList] = useState<string>('ABC');
 
   const addNewTodo = useCallback(() => {
     if (newTodoRef.current) {
@@ -68,8 +87,23 @@ const Todos = () => {
     }
   }, []);
 
+  useEffect(() => {
+    dispatch(changeList(selectedList));
+  }, [selectedList]);
+
   return (
     <div className={styles.row}>
+      <div className={styles.selectList}>
+        <SelectMenu
+          options={[
+            { value: 'ABC', label: 'ABC' },
+            { value: 'ABCD', label: 'ABCD' },
+          ]}
+          value={selectedList}
+          onChange={setSelectedList}
+          styles={{ minWidth: '200px' }}
+        />
+      </div>
       <div className={styles.addTodo}>
         <input ref={newTodoRef} className={styles.todo} />
         <Button

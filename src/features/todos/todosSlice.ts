@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction, current } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store';
 
 import { generateId } from '../../utils';
@@ -10,27 +10,92 @@ export interface Todo {
   saved: boolean;
 }
 
-export interface TodosState {
+export interface TodosGroup {
+  listid: string;
+  title: string;
   todos: Todo[];
 }
 
+export interface TodosState {
+  selectedListId: string;
+  todosGroup: TodosGroup[];
+}
+
 const initialState: TodosState = {
-  todos: [
+  selectedListId: 'ABC',
+  todosGroup: [
     {
-      id: generateId(),
-      text: 'Learn TypeScript',
-      complete: false,
-      saved: true,
+      listid: 'ABC',
+      title: 'General',
+      todos: [
+        {
+          id: generateId(),
+          text: 'Learn TypeScript 1',
+          complete: false,
+          saved: true,
+        },
+        {
+          id: generateId(),
+          text: 'Learn NextJS',
+          complete: false,
+          saved: true,
+        },
+        {
+          id: '675656776',
+          text: 'Learn Cypress',
+          complete: false,
+          saved: true,
+        },
+        {
+          id: generateId(),
+          text: 'Develop Webpack Federation MFE architecture',
+          complete: false,
+          saved: true,
+        },
+        {
+          id: generateId(),
+          text: 'React Router',
+          complete: false,
+          saved: true,
+        },
+      ],
     },
-    { id: generateId(), text: 'Learn NextJS', complete: false, saved: true },
-    { id: '675656776', text: 'Learn Cypress', complete: false, saved: true },
     {
-      id: generateId(),
-      text: 'Develop Webpack Federation MFE architecture',
-      complete: false,
-      saved: true,
+      listid: 'ABCD',
+      title: 'General',
+      todos: [
+        {
+          id: generateId(),
+          text: 'Learn TypeScript 2',
+          complete: false,
+          saved: true,
+        },
+        {
+          id: generateId(),
+          text: 'Learn NextJS',
+          complete: false,
+          saved: true,
+        },
+        {
+          id: '675656776',
+          text: 'Learn Cypress',
+          complete: false,
+          saved: true,
+        },
+        {
+          id: generateId(),
+          text: 'Develop Webpack Federation MFE architecture',
+          complete: false,
+          saved: true,
+        },
+        {
+          id: generateId(),
+          text: 'React Router',
+          complete: false,
+          saved: true,
+        },
+      ],
     },
-    { id: generateId(), text: 'React Router', complete: false, saved: true },
   ],
 };
 
@@ -39,28 +104,44 @@ export const todosSlice = createSlice({
   initialState,
   reducers: {
     addTodo: (state, action) => {
-      state.todos.push({
+      const todos = state.todosGroup.find(
+        (list) => list.listid === state.selectedListId
+      )?.todos;
+
+      todos?.push({
         id: generateId(),
         text: action.payload,
         complete: false,
         saved: false,
       });
     },
-
     deleteTodo: (state, action: PayloadAction<any>) => {
-      state.todos = state.todos.filter(
-        (todo) => todo.id !== action?.payload.id
+      const listIndex = state.todosGroup.findIndex(
+        (list) => list.listid === state.selectedListId
       );
+
+      state.todosGroup[listIndex].todos = state.todosGroup[
+        listIndex
+      ].todos?.filter((todo) => todo.id !== action?.payload.id);
     },
     selectStatus: (state, action: PayloadAction<any>) => {
-      const item = state.todos.find((todo) => todo.id === action.payload.id);
+      const todos = state.todosGroup.find(
+        (list) => list.listid === state.selectedListId
+      )?.todos;
+
+      console.log(current(todos));
+      const item = todos?.find((todo) => todo.id === action.payload.id);
       if (item) item.complete = !item.complete;
+    },
+    changeList: (state, action) => {
+      state.selectedListId = action.payload;
     },
   },
 });
 
 export const todosList = (state: RootState) => state.todos;
 
-export const { addTodo, deleteTodo, selectStatus } = todosSlice.actions;
+export const { addTodo, deleteTodo, selectStatus, changeList } =
+  todosSlice.actions;
 
 export default todosSlice.reducer;
