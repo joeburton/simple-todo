@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useRef } from 'react';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import ModeStandbyIcon from '@mui/icons-material/ModeStandby';
 import Button from '@mui/material/Button';
@@ -60,53 +60,18 @@ const TodoItem = ({ todo }: TodoItemProps) => {
 
 const Todos = () => {
   const dispatch = useAppDispatch();
-  const [details, setDetails] = useState();
+  const newTodoRef = useRef<HTMLInputElement>(null);
 
-  const [newTodo, setNewTodo] = useState<string>('');
-
-  const updateNewTodo = (e: React.ChangeEvent<HTMLInputElement>) => {
-    e.preventDefault();
-    setNewTodo(e.target.value);
-  };
-
-  const addNewTodo = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    dispatch(addTodo(newTodo));
-  };
-
-  useEffect(() => {
-    fetch('data.json')
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
-      })
-      .catch((e) => {
-        console.log(e);
-      });
-  }, []);
-
-  useEffect(() => {
-    const getData = async () => {
-      const response = await fetch('data.json');
-      const data = await response.json();
-
-      setDetails(data);
-    };
-
-    getData().catch((e) => {
-      console.log(e);
-    });
+  const addNewTodo = useCallback(() => {
+    if (newTodoRef.current) {
+      dispatch(addTodo(newTodoRef.current.value));
+    }
   }, []);
 
   return (
     <div className={styles.row}>
-      <>{JSON.stringify(details)}</>
       <div className={styles.addTodo}>
-        <input
-          value={newTodo}
-          onChange={updateNewTodo}
-          className={styles.todo}
-        />
+        <input ref={newTodoRef} className={styles.todo} />
         <Button
           className={styles.add}
           onClick={addNewTodo}
