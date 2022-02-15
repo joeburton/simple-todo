@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useMemo, useEffect, useRef, useState } from 'react';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import ModeStandbyIcon from '@mui/icons-material/ModeStandby';
 import Button from '@mui/material/Button';
@@ -50,7 +50,6 @@ interface TodoItemProps {
 
 const TodoItem = ({ todo }: TodoItemProps) => {
   const dispatch = useAppDispatch();
-  console.log(todo);
   const removeTodo = (e: React.MouseEvent<SVGElement>) => {
     dispatch(deleteTodo({ id: todo.id }));
   };
@@ -79,7 +78,12 @@ const TodoItem = ({ todo }: TodoItemProps) => {
 const Todos = () => {
   const dispatch = useAppDispatch();
   const newTodoRef = useRef<HTMLInputElement>(null);
+
   const [selectedList, setSelectedList] = useState<string>('ABC');
+
+  const todosLists = useAppSelector(
+    (state: RootState) => state.todos.todosGroup
+  );
 
   const addNewTodo = useCallback(() => {
     if (newTodoRef.current) {
@@ -91,14 +95,19 @@ const Todos = () => {
     dispatch(changeList(selectedList));
   }, [selectedList]);
 
+  const options = useMemo(() => {
+    console.log('useMemo');
+    return todosLists.map((list) => ({
+      value: list.listid,
+      label: list.title,
+    }));
+  }, [todosLists.length]);
+
   return (
     <div className={styles.row}>
       <div className={styles.selectList}>
         <SelectMenu
-          options={[
-            { value: 'ABC', label: 'ABC' },
-            { value: 'ABCD', label: 'ABCD' },
-          ]}
+          options={options}
           value={selectedList}
           onChange={setSelectedList}
           styles={{ minWidth: '200px' }}

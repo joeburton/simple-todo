@@ -26,7 +26,7 @@ const initialState: TodosState = {
   todosGroup: [
     {
       listid: 'ABC',
-      title: 'General',
+      title: 'Tech Tasks',
       todos: [
         {
           id: generateId(),
@@ -62,35 +62,23 @@ const initialState: TodosState = {
     },
     {
       listid: 'ABCD',
-      title: 'General',
+      title: 'Day to day',
       todos: [
         {
           id: generateId(),
-          text: 'Learn TypeScript 2',
+          text: 'Build garage',
           complete: false,
           saved: true,
         },
         {
           id: generateId(),
-          text: 'Learn NextJS',
+          text: 'New front door',
           complete: false,
           saved: true,
         },
         {
           id: '675656776',
-          text: 'Learn Cypress',
-          complete: false,
-          saved: true,
-        },
-        {
-          id: generateId(),
-          text: 'Develop Webpack Federation MFE architecture',
-          complete: false,
-          saved: true,
-        },
-        {
-          id: generateId(),
-          text: 'React Router',
+          text: 'Finish off outhouse',
           complete: false,
           saved: true,
         },
