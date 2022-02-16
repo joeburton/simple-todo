@@ -1,11 +1,19 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useMemo, useEffect, useRef, useState } from 'react';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import ModeStandbyIcon from '@mui/icons-material/ModeStandby';
 import Button from '@mui/material/Button';
 
 import { RootState } from '../../app/store';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
-import { addTodo, deleteTodo, selectStatus, Todo } from './todosSlice';
+import {
+  addTodo,
+  deleteTodo,
+  selectStatus,
+  changeList,
+  Todo,
+} from './todosSlice';
+
+import { SelectMenu } from '../../components';
 import styles from './Todos.module.css';
 
 interface TodoListProps {
@@ -13,13 +21,25 @@ interface TodoListProps {
 }
 
 const TodoList = ({ filterFn }: TodoListProps) => {
-  const todos = useAppSelector((state: RootState) => state.todos.todos);
+  const todosLists = useAppSelector(
+    (state: RootState) => state.todos.todosGroup
+  );
 
-  const sortedTodos = filterFn ? todos.filter(filterFn) : todos;
+  const selectedListId = useAppSelector(
+    (state: RootState) => state.todos.selectedListId
+  );
+
+  // get selected list by list id
+  const selectedList = todosLists.find(
+    (list) => list.listid === selectedListId
+  )?.todos;
+
+  // sort complete and active list items
+  const sortedTodos = filterFn ? selectedList?.filter(filterFn) : selectedList;
 
   return (
     <ul className={styles.todosList}>
-      {sortedTodos.map((todo, i) => (
+      {sortedTodos?.map((todo, i) => (
         <TodoItem key={i} todo={todo} />
       ))}
     </ul>
@@ -32,7 +52,6 @@ interface TodoItemProps {
 
 const TodoItem = ({ todo }: TodoItemProps) => {
   const dispatch = useAppDispatch();
-
   const removeTodo = (e: React.MouseEvent<SVGElement>) => {
     dispatch(deleteTodo({ id: todo.id }));
   };
@@ -60,53 +79,44 @@ const TodoItem = ({ todo }: TodoItemProps) => {
 
 const Todos = () => {
   const dispatch = useAppDispatch();
-  const [details, setDetails] = useState();
 
-  const [newTodo, setNewTodo] = useState<string>('');
+  const newTodoRef = useRef<HTMLInputElement>(null);
 
-  const updateNewTodo = (e: React.ChangeEvent<HTMLInputElement>) => {
-    e.preventDefault();
-    setNewTodo(e.target.value);
-  };
+  const [selectedList, setSelectedList] = useState<string>('ABC');
 
-  const addNewTodo = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    dispatch(addTodo(newTodo));
-  };
+  const todosLists = useAppSelector(
+    (state: RootState) => state.todos.todosGroup
+  );
 
-  useEffect(() => {
-    fetch('data.json')
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
-      })
-      .catch((e) => {
-        console.log(e);
-      });
-  }, []);
+  const addNewTodo = useCallback(() => {
+    if (newTodoRef.current) {
+      dispatch(addTodo(newTodoRef.current.value));
+    }
+  }, [dispatch]);
 
   useEffect(() => {
-    const getData = async () => {
-      const response = await fetch('data.json');
-      const data = await response.json();
+    dispatch(changeList(selectedList));
+  }, [dispatch, selectedList]);
 
-      setDetails(data);
-    };
-
-    getData().catch((e) => {
-      console.log(e);
-    });
-  }, []);
+  const options = useMemo(() => {
+    return todosLists.map((list) => ({
+      value: list.listid,
+      label: list.title,
+    }));
+  }, [todosLists]);
 
   return (
     <div className={styles.row}>
-      <>{JSON.stringify(details)}</>
-      <div className={styles.addTodo}>
-        <input
-          value={newTodo}
-          onChange={updateNewTodo}
-          className={styles.todo}
+      <div className={styles.selectList}>
+        <SelectMenu
+          options={options}
+          value={selectedList}
+          onChange={setSelectedList}
+          styles={{ minWidth: '200px', height: '38px' }}
         />
+      </div>
+      <div className={styles.addTodo}>
+        <input ref={newTodoRef} className={styles.todo} />
         <Button
           className={styles.add}
           onClick={addNewTodo}
