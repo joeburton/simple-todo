@@ -22,10 +22,10 @@ export interface TodosState {
 }
 
 const initialState: TodosState = {
-  selectedListId: 'ABC',
+  selectedListId: '',
   todosGroup: [
     {
-      listid: 'ABC',
+      listid: 'tech-tasks',
       title: 'Tech Tasks',
       todos: [
         {
@@ -61,7 +61,7 @@ const initialState: TodosState = {
       ],
     },
     {
-      listid: 'ABCD',
+      listid: 'day-to-day',
       title: 'Day to day',
       todos: [
         {

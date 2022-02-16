@@ -82,7 +82,8 @@ const Todos = () => {
 
   const newTodoRef = useRef<HTMLInputElement>(null);
 
-  const [selectedList, setSelectedList] = useState<string>('ABC');
+  const [selectedList, setSelectedList] = useState<string>('default');
+  console.log(selectedList);
 
   const todosLists = useAppSelector(
     (state: RootState) => state.todos.todosGroup
@@ -99,10 +100,17 @@ const Todos = () => {
   }, [dispatch, selectedList]);
 
   const options = useMemo(() => {
-    return todosLists.map((list) => ({
+    const options = todosLists.map((list) => ({
       value: list.listid,
       label: list.title,
     }));
+
+    options.unshift({
+      value: 'default',
+      label: 'Please select a list',
+    });
+
+    return options;
   }, [todosLists]);
 
   return (
@@ -126,10 +134,17 @@ const Todos = () => {
           ADD
         </Button>
       </div>
-      <h2>Active</h2>
-      <TodoList filterFn={(todo: Todo) => todo.complete === false} />
-      <h2>Complete</h2>
-      <TodoList filterFn={(todo: Todo) => todo.complete === true} />
+      {selectedList === 'default' ? (
+        `Please select a list`
+      ) : (
+        <>
+          {' '}
+          <h2>Active</h2>
+          <TodoList filterFn={(todo: Todo) => todo.complete === false} />
+          <h2>Complete</h2>
+          <TodoList filterFn={(todo: Todo) => todo.complete === true} />
+        </>
+      )}
     </div>
   );
 };

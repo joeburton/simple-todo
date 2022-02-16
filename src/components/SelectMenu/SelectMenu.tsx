@@ -17,7 +17,6 @@ type Props<T extends OptionValue> = {
 const SelectMenu = <T extends OptionValue>(props: Props<T>) => {
   function handleOnChange(e: React.FormEvent<HTMLSelectElement>) {
     const { selectedIndex } = e.currentTarget;
-    console.log(e.currentTarget);
     const selectedOption = props.options[selectedIndex];
     props.onChange(selectedOption.value);
   }
