@@ -100,24 +100,20 @@ const Todos = () => {
   }, [dispatch, selectedList]);
 
   const options = useMemo(() => {
-    const options = todosLists.map((list) => ({
+    return todosLists.map((list) => ({
       value: list.listid,
       label: list.title,
     }));
-
-    options.unshift({
-      value: 'default',
-      label: 'Please select a list',
-    });
-
-    return options;
   }, [todosLists]);
 
   return (
     <div className={styles.row}>
       <div className={styles.selectList}>
         <SelectMenu
-          options={options}
+          options={[
+            { value: 'default', label: 'Select something' },
+            ...options,
+          ]}
           value={selectedList}
           onChange={setSelectedList}
           styles={{ minWidth: '200px', height: '38px' }}
