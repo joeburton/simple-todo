@@ -21,14 +21,16 @@ interface TodoListProps {
 }
 
 const TodoList = ({ filterFn }: TodoListProps) => {
-  const todos = useAppSelector((state: RootState) => state.todos.todosGroup);
+  const todosLists = useAppSelector(
+    (state: RootState) => state.todos.todosGroup
+  );
 
   const selectedListId = useAppSelector(
     (state: RootState) => state.todos.selectedListId
   );
 
   // get selected list by list id
-  const selectedList = todos.find(
+  const selectedList = todosLists.find(
     (list) => list.listid === selectedListId
   )?.todos;
 
@@ -77,6 +79,7 @@ const TodoItem = ({ todo }: TodoItemProps) => {
 
 const Todos = () => {
   const dispatch = useAppDispatch();
+
   const newTodoRef = useRef<HTMLInputElement>(null);
 
   const [selectedList, setSelectedList] = useState<string>('ABC');
@@ -89,19 +92,18 @@ const Todos = () => {
     if (newTodoRef.current) {
       dispatch(addTodo(newTodoRef.current.value));
     }
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     dispatch(changeList(selectedList));
-  }, [selectedList]);
+  }, [dispatch, selectedList]);
 
   const options = useMemo(() => {
-    console.log('useMemo');
     return todosLists.map((list) => ({
       value: list.listid,
       label: list.title,
     }));
-  }, [todosLists.length]);
+  }, [todosLists]);
 
   return (
     <div className={styles.row}>
@@ -110,7 +112,7 @@ const Todos = () => {
           options={options}
           value={selectedList}
           onChange={setSelectedList}
-          styles={{ minWidth: '200px' }}
+          styles={{ minWidth: '200px', height: '38px' }}
         />
       </div>
       <div className={styles.addTodo}>

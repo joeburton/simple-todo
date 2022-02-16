@@ -14,7 +14,7 @@ type Props<T extends OptionValue> = {
   styles?: React.CSSProperties;
 };
 
-function SelectMenu<T extends OptionValue>(props: Props<T>) {
+const SelectMenu = <T extends OptionValue>(props: Props<T>) => {
   function handleOnChange(e: React.FormEvent<HTMLSelectElement>) {
     const { selectedIndex } = e.currentTarget;
     console.log(e.currentTarget);
@@ -35,5 +35,5 @@ function SelectMenu<T extends OptionValue>(props: Props<T>) {
       ))}
     </select>
   );
-}
+};
 export default SelectMenu;
