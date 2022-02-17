@@ -83,8 +83,6 @@ const Todos = () => {
   const newTodoRef = useRef<HTMLInputElement>(null);
 
   const [selectedList, setSelectedList] = useState<string>('default');
-  console.log(selectedList);
-
   const todosLists = useAppSelector(
     (state: RootState) => state.todos.todosGroup
   );
@@ -100,7 +98,6 @@ const Todos = () => {
   }, [dispatch, selectedList]);
 
   const options = useMemo(() => {
-    console.log('useMemo: ', todosLists);
     return todosLists.map((list) => ({
       value: list.listid,
       label: list.title,
